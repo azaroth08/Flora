@@ -1,8 +1,8 @@
-/*     Simple Stepper Motor Control Exaple Code
- *      
- *  by Dejan Nedelkovski, www.HowToMechatronics.com
- *  
- */
+/*
+* Drives the base including the ultrasonic sensor integration
+* Receives commands via serial using wasd to drive, and e to set the drivers to sleep.
+*/
+
 // defines pins numbers
 const int stepPin1 = 2; 
 const int dirPin1 = 3; 
