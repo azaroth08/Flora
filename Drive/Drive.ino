@@ -53,8 +53,8 @@ void loop() {
   
   
   if (Serial.available()){
-    byte size = Serial.readBytes(receive,31);
-    //receive[size] = 0;
+    byte sizeR = Serial.readBytes(receive,31);
+    receive[sizeR] = 0;
     char* command = strtok(receive, ",");
     int i = 0;
     while (command != 0)
@@ -95,14 +95,14 @@ void loop() {
   comm[2] = 0;
   count = 1;
   steps_start = num_steps;
-  delayTime = 25000;
+  delayTime = 15000;
 
   while (num_steps >0){
-    if (num_steps+40 > steps_start) {
-      delayTime = delayTime-500;
+    if (num_steps+100 > steps_start) {
+      delayTime = delayTime-100;
     }
-    else if (num_steps<40) {
-      delayTime = delayTime+500;
+    else if (num_steps<100) {
+      delayTime = delayTime+100;
     }
     else {
       delayTime = 5000;
@@ -119,7 +119,7 @@ void loop() {
     delayMicroseconds(delayTime); 
     num_steps--;                        //increments the number of steps left to take 
     Serial.println(num_steps);
-    
+    /*
     if (count ==41){                    //checks for an object in front of flora and its distance on the first 
         count = 0;                      //sensor
         digitalWrite(trigPin,HIGH);
@@ -144,16 +144,17 @@ void loop() {
     count++;
     if ((distance1 <= distThresh && distance1!=0) || (distance2 <=distThresh && distance2 != 0)) {
       steps_left = num_steps;
-      num_steps = 40;           
+      num_steps = 100; 
+      Serial.println(steps_left);          
     }
     else {
       steps_left = num_steps;
-    }
+    }*/
   }
                //shuts off the motor drives when Flora isnt moving
     
   digitalWrite(en,HIGH);              //saves power and wont melt the drives or wires
-  Serial.println(steps_left);
+  //Serial.println(steps_left);
 
 
 }
