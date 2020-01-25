@@ -45,7 +45,6 @@ void setup() {
   pinMode(trigPin2, OUTPUT);
   pinMode(echoPin2,INPUT);
   Serial.begin(9600);
-  Serial.begin(115200);
 
 }
 void loop() {
@@ -96,13 +95,14 @@ void loop() {
   comm[2] = 0;
   count = 1;
   steps_start = num_steps;
+  delayTime = 25000;
 
   while (num_steps >0){
-    if (num_steps+20 > steps_start) {
-      delayTime = 15000-(steps_start-num_steps)*500;
+    if (num_steps+40 > steps_start) {
+      delayTime = delayTime-500;
     }
-    else if (num_steps<20) {
-      delayTime = 5000+(20-num_steps)*500;
+    else if (num_steps<40) {
+      delayTime = delayTime+500;
     }
     else {
       delayTime = 5000;
@@ -144,7 +144,7 @@ void loop() {
     count++;
     if ((distance1 <= distThresh && distance1!=0) || (distance2 <=distThresh && distance2 != 0)) {
       steps_left = num_steps;
-      num_steps = 20;           
+      num_steps = 40;           
     }
     else {
       steps_left = num_steps;
