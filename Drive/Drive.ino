@@ -4,22 +4,12 @@ const int stepPin1 = 2;
 const int dirPin1 = 6; 
 const int stepPin2 = 4;
 const int dirPin2 = 5;
-const int sleep = 8;
 
 char receive[31];
 
 
-const int stepPin1 = 2; 
-const int dirPin1 = 3; 
-const int stepPin2 = 4;
-const int dirPin2 = 5;
-const int sleep = 8;
-bool go = false;
-char receive = 'w';
-char dir = receive;
-
-int motor1_dir= HIGH;
-int motor2_dir= HIGH;
+int motor1_dir;
+int motor2_dir;
 const int en = 7;
 
 const int trigPin = 10;
@@ -35,7 +25,7 @@ long duration2;
 int distance1;
 int distance2;
 int count=0;
-<<<<<<< HEAD
+
 int comm[3];
 
 int num_steps;
@@ -152,7 +142,7 @@ void loop() {
                //shuts off the motor drives when Flora isnt moving
     
   digitalWrite(en,HIGH);              //saves power and wont melt the drives or wires
-  Serial.println(steps_left
+  Serial.println(steps_left);
 
 
 }
