@@ -30,6 +30,7 @@ int comm[3];
 
 int num_steps;
 int steps_left;
+int steps_start;
 unsigned int delayTime;
 
 
@@ -94,9 +95,19 @@ void loop() {
   num_steps = comm[2];
   comm[2] = 0;
   count = 1;
-  
+  steps_start = num_steps;
 
   while (num_steps >0){
+    if (num_steps+20 > steps_start) {
+      delayTime = 15000-(steps_start-num_steps)*500;
+    }
+    else if (num_steps<20) {
+      delayTime = 5000+(20-num_steps)*500;
+    }
+    else {
+      delayTime = 5000;
+    }
+    
     digitalWrite(en,LOW);                 //Takes one step for each motor, with a delay time as defined earlier
     digitalWrite(dirPin1,motor1_dir);    
     digitalWrite(dirPin2,motor2_dir);
