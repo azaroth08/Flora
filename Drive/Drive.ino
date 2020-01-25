@@ -67,7 +67,7 @@ void loop() {
     }
     //Serial.println(comm[0]);
     //Serial.println(comm[1]);
-    //sSerial.println(comm[2]);
+    //Serial.println(comm[2]);
   }
 
   if (comm[0] == 0){
