@@ -42,7 +42,7 @@ static int protoUS1(struct pt *pt) {
   PT_BEGIN(pt);
   while (1) {
 
-    //Serial.print(distance1);
+
   }
   PT_END(pt);
 }
@@ -157,14 +157,13 @@ void loop() {
     digitalWrite(stepPin2, LOW);
     protoDelay2(&pt3);
 
-    Serial.print('\t');
     if (count == 40) {
       count = 0;
       digitalWrite(trigPin, HIGH);
       delayMicroseconds(10);
       digitalWrite(trigPin, LOW);
 
-      duration = pulseIn(echoPin, HIGH);
+      duration = pulseIn(echoPin, HIGH,25000);
 
       distance1 = duration / 2 * 0.034;
       Serial.println(distance1);
@@ -174,5 +173,4 @@ void loop() {
   }
   delay(500);
   digitalWrite(en, HIGH);             //saves power and wont melt the drives or wires
-  //Serial.println(steps_left);
 }
