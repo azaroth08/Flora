@@ -34,7 +34,7 @@ int steps_start;
 unsigned int delayTime;
 
 
-static struct pt pt1, pt2;
+static struct pt pt1, pt2,pt3;
 
 
 static int protoUS1(struct pt *pt) {
@@ -55,44 +55,25 @@ static int protoUS1(struct pt *pt) {
 }
 
 
-static int protoMain(struct pt *pt) {
+static int protoDelay(struct pt *pt) {
   static unsigned long timeStamp = 0;
   PT_BEGIN(pt);
-
-  while (num_steps > 0) {
-    if (num_steps + 100 > steps_start) {
-      delayTime = delayTime - 100;
-    }
-    else if (num_steps < 100) {
-      delayTime = delayTime + 100;
-    }
-    else {
-      delayTime = 5000;
-    }
-    Serial.println(num_steps);
-
-
-
-    digitalWrite(dirPin1, motor1_dir);
-    digitalWrite(dirPin2, motor2_dir);
-    digitalWrite(stepPin1, HIGH);
-    digitalWrite(stepPin2, HIGH);
+  while(1){
     timeStamp = micros();
     PT_WAIT_UNTIL(pt, micros() - timeStamp > delayTime);
-    digitalWrite(stepPin1, LOW);
-    digitalWrite(stepPin2, LOW);
-    timeStamp = micros();
-    PT_WAIT_UNTIL(pt, micros() - timeStamp > delayTime);
-
-    //Serial.print('\t');
-    if (count == 40) {
-      count = 0;
-      //protoUS1(&pt2);
-    }
-    //Serial.print('\n');
-    num_steps--;
-    count++;
   }
+
+  PT_END(pt);
+}
+
+static int protoDelay2(struct pt *pt) {
+  static unsigned long timeStamp = 0;
+  PT_BEGIN(pt);
+  while(1){
+    timeStamp = micros();
+    PT_WAIT_UNTIL(pt, micros() - timeStamp > delayTime);
+  }
+
   PT_END(pt);
 }
 
@@ -109,6 +90,7 @@ void setup() {
   Serial.begin(9600);
   PT_INIT(&pt1);
   PT_INIT(&pt2);
+  PT_INIT(&pt3);
 
 }
 
@@ -161,7 +143,38 @@ void loop() {
 
   digitalWrite(en, LOW);                //Takes one step for each motor, with a delay time as defined earlier
   delay(250);
-  protoMain(&pt1);
+  while (num_steps > 0) {
+    if (num_steps + 100 > steps_start) {
+      delayTime = delayTime - 100;
+    }
+    else if (num_steps < 100) {
+      delayTime = delayTime + 100;
+    }
+    else {
+      delayTime = 5000;
+    }
+    Serial.println(num_steps);
+
+
+
+    digitalWrite(dirPin1, motor1_dir);
+    digitalWrite(dirPin2, motor2_dir);
+    digitalWrite(stepPin1, HIGH);
+    digitalWrite(stepPin2, HIGH);
+    protoDelay(&pt1);
+    digitalWrite(stepPin1, LOW);
+    digitalWrite(stepPin2, LOW);
+    protoDelay2(&pt3);
+
+    //Serial.print('\t');
+    if (count == 40) {
+      count = 0;
+      //protoUS1(&pt2);
+    }
+    //Serial.print('\n');
+    num_steps--;
+    count++;
+  }
   delay(500);
   digitalWrite(en, HIGH);             //saves power and wont melt the drives or wires
   //Serial.println(steps_left);
