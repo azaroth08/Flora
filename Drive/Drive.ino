@@ -49,7 +49,7 @@ static int protoUS1(struct pt *pt) {
     duration = pulseIn(echoPin, HIGH);
 
     distance1 = duration / 2 * 0.034;
-    Serial.print(distance1);
+    //Serial.print(distance1);
   }
   PT_END(pt);
 }
@@ -59,16 +59,8 @@ static int protoMain(struct pt *pt) {
   static unsigned long timeStamp = 0;
   PT_BEGIN(pt);
   while (1) {
-    Serial.print(num_steps);
-    if (num_steps + 100 > steps_start) {
-      delayTime = delayTime - 100;
-    }
-    else if (num_steps < 100) {
-      delayTime = delayTime + 100;
-    }
-    else {
-      delayTime = 5000;
-    }
+    Serial.println(num_steps);
+
 
     digitalWrite(en, LOW);                //Takes one step for each motor, with a delay time as defined earlier
     digitalWrite(dirPin1, motor1_dir);
@@ -150,13 +142,22 @@ void loop() {
   delayTime = 15000;
 
   while (num_steps > 0) {
-    protoMain(&pt1);
-    Serial.print('\t');
-    if (count ==40) {
-      count = 0;
-      protoUS1(&pt2);
+    if (num_steps + 100 > steps_start) {
+      delayTime = delayTime - 100;
     }
-    Serial.print('\n');
+    else if (num_steps < 100) {
+      delayTime = delayTime + 100;
+    }
+    else {
+      delayTime = 5000;
+    }
+    protoMain(&pt1);
+    //Serial.print('\t');
+    if (count == 40) {
+      count = 0;
+      //protoUS1(&pt2);
+    }
+    //Serial.print('\n');
     num_steps--;
     count++;
   }
