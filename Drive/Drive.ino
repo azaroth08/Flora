@@ -37,104 +37,6 @@ unsigned int delayTime;
 static struct pt pt1, pt2;
 
 
-static int protoUS1(struct pt *pt) {
-  static unsigned long timeStamp = 0;
-  PT_BEGIN(pt);
-  while (1) {
-    digitalWrite(trigPin, HIGH);
-    timeStamp = micros();
-    PT_WAIT_UNTIL(pt, micros() - timeStamp > 10);
-    digitalWrite(trigPin, LOW);
-
-    duration = pulseIn(echoPin, HIGH);
-
-    distance1 = duration / 2 * 0.034;
-  }
-  PT_END(pt);
-}
-
-
-static int protoMain(struct pt *pt) {
-  static unsigned long timeStamp = 0;
-  PT_BEGIN(pt);
-  while (1) {
-    digitalWrite(trigPin, LOW);
-    digitalWrite(trigPin2, LOW);
-
-
-    if (Serial.available()) {
-      byte sizeR = Serial.readBytes(receive, 31);
-      receive[sizeR] = 0;
-      char* command = strtok(receive, ",");
-      int i = 0;
-      while (command != 0) {
-
-        comm[i] = atoi(command);
-        i += 1;
-        // Find the next command in input string
-        command = strtok(0, ",");
-      }
-    }
-
-    if (comm[0] == 0) {
-      if (comm[1] == 1) {
-        motor1_dir = LOW;
-        motor2_dir = HIGH;
-      }
-      else if (comm[1] == 0) {
-        motor1_dir = HIGH;
-        motor2_dir = LOW;
-      }
-    }
-    else if (comm[0] == 1) {
-      if (comm[1] == 1) {
-        motor1_dir = HIGH;
-        motor2_dir = HIGH;
-      }
-      else if (comm[1] == 0) {
-        motor1_dir = LOW;
-        motor2_dir = LOW;
-      }
-    }
-
-    num_steps = comm[2];
-    comm[2] = 0;
-    count = 1;
-    steps_start = num_steps;
-    delayTime = 15000;
-
-    while (num_steps > 0) {
-      if (num_steps + 100 > steps_start) {
-        delayTime = delayTime - 100;
-      }
-      else if (num_steps < 100) {
-        delayTime = delayTime + 100;
-      }
-      else {
-        delayTime = 5000;
-      }
-
-      digitalWrite(en, LOW);                //Takes one step for each motor, with a delay time as defined earlier
-      digitalWrite(dirPin1, motor1_dir);
-      digitalWrite(dirPin2, motor2_dir);
-      digitalWrite(stepPin1, HIGH);
-      digitalWrite(stepPin2, HIGH);
-      timeStamp = micros();
-      PT_WAIT_UNTIL(pt, micros() - timeStamp > delayTime);
-      digitalWrite(stepPin1, LOW);
-      digitalWrite(stepPin2, LOW);
-      timeStamp = micros();
-      PT_WAIT_UNTIL(pt, micros() - timeStamp > delayTime);
-      num_steps--;                        //increments the number of steps left to take
-    }
-    digitalWrite(en, HIGH);             //saves power and wont melt the drives or wires
-    //Serial.println(steps_left);
-
-  }
-  PT_END(pt);
-}
-
-
 void setup() {
   // Sets the two pins as Outputs
   pinMode(stepPin1, OUTPUT);
@@ -152,6 +54,113 @@ void setup() {
 }
 
 void loop() {
-  protoMain(&pt1);
-  protoUS1(&pt2);
+
+  digitalWrite(trigPin, LOW);
+  digitalWrite(trigPin2, LOW);
+
+
+  if (Serial.available()) {
+    byte sizeR = Serial.readBytes(receive, 31);
+    receive[sizeR] = 0;
+    char* command = strtok(receive, ",");
+    int i = 0;
+    while (command != 0) {
+
+      comm[i] = atoi(command);
+      i += 1;
+      // Find the next command in input string
+      command = strtok(0, ",");
+    }
+  }
+
+  if (comm[0] == 0) {
+    if (comm[1] == 1) {
+      motor1_dir = LOW;
+      motor2_dir = HIGH;
+    }
+    else if (comm[1] == 0) {
+      motor1_dir = HIGH;
+      motor2_dir = LOW;
+    }
+  }
+  else if (comm[0] == 1) {
+    if (comm[1] == 1) {
+      motor1_dir = HIGH;
+      motor2_dir = HIGH;
+    }
+    else if (comm[1] == 0) {
+      motor1_dir = LOW;
+      motor2_dir = LOW;
+    }
+  }
+
+  num_steps = comm[2];
+  comm[2] = 0;
+  count = 1;
+  steps_start = num_steps;
+  delayTime = 15000;
+
+  while (num_steps > 0) {
+    protoMain(&pt1);
+    Serial.print('\t');
+    if (count ==40) {
+      count = 0;
+      protoUS1(&pt2);
+    }
+    Serial.print('\n');
+    num_steps--;
+    count++;
+  }
+  digitalWrite(en, HIGH);             //saves power and wont melt the drives or wires
+  //Serial.println(steps_left);
+}
+
+
+static int protoUS1(struct pt *pt) {
+  static unsigned long timeStamp = 0;
+  PT_BEGIN(pt);
+  while (1) {
+    digitalWrite(trigPin, HIGH);
+    timeStamp = micros();
+    PT_WAIT_UNTIL(pt, micros() - timeStamp > 10);
+    digitalWrite(trigPin, LOW);
+
+    duration = pulseIn(echoPin, HIGH);
+
+    distance1 = duration / 2 * 0.034;
+    Serial.print(distance1);
+  }
+  PT_END(pt);
+}
+
+
+static int protoMain(struct pt *pt) {
+  static unsigned long timeStamp = 0;
+  PT_BEGIN(pt);
+  while (1) {
+    Serial.print(num_steps);
+    if (num_steps + 100 > steps_start) {
+      delayTime = delayTime - 100;
+    }
+    else if (num_steps < 100) {
+      delayTime = delayTime + 100;
+    }
+    else {
+      delayTime = 5000;
+    }
+
+    digitalWrite(en, LOW);                //Takes one step for each motor, with a delay time as defined earlier
+    digitalWrite(dirPin1, motor1_dir);
+    digitalWrite(dirPin2, motor2_dir);
+    digitalWrite(stepPin1, HIGH);
+    digitalWrite(stepPin2, HIGH);
+    timeStamp = micros();
+    PT_WAIT_UNTIL(pt, micros() - timeStamp > delayTime);
+    digitalWrite(stepPin1, LOW);
+    digitalWrite(stepPin2, LOW);
+    timeStamp = micros();
+    PT_WAIT_UNTIL(pt, micros() - timeStamp > delayTime);
+
+  }
+  PT_END(pt);
 }
