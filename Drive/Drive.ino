@@ -1,4 +1,4 @@
-
+#include<pt.h>
 // defines pins numbers
 const int stepPin1 = 2; 
 const int dirPin1 = 6; 
@@ -34,6 +34,30 @@ int steps_start;
 unsigned int delayTime;
 
 
+static struct pt pt1 pt2 pt3;
+
+
+static int protoUS1(struct pt *pt){ 
+	static unsigned long timeStamp 
+        PT_BEGIN(pt);
+	digitalWrite(trigPin,HIGH);
+	timeStamp = micros();
+        PT_WAIT_UNTILL(pt,micros()-timeStamp >10);
+        digitalWrite(trigPin,LOW);
+
+        duration = pulseIn(echoPin,HIGH);
+
+        distance1 = duration/2*0.034;
+	PT_END(pt);
+}
+
+
+static int protoUS2(struct pt *pt){
+
+}
+
+
+
 void setup() {
   // Sets the two pins as Outputs
   pinMode(stepPin1,OUTPUT); 
@@ -45,9 +69,20 @@ void setup() {
   pinMode(trigPin2, OUTPUT);
   pinMode(echoPin2,INPUT);
   Serial.begin(9600);
+  PT_INIT(&pt1);
+  PT_INIT(&pt2);
 
 }
-void loop() {
+void loop() {	
+  protoMain(&pt1);
+  protoUS1(&pt2);
+}
+
+
+static int protoMain(static pt *pt){	
+  static unsigned long timeStamp;
+  PT_BEGIN(pt);
+  while(1){
   digitalWrite(trigPin,LOW);
   digitalWrite(trigPin2,LOW);
   
@@ -113,10 +148,12 @@ void loop() {
     digitalWrite(dirPin2,motor2_dir);
     digitalWrite(stepPin1,HIGH); 
     digitalWrite(stepPin2,HIGH); 
-    delayMicroseconds(delayTime); 
+    timeStamp = micros();
+    PT_WAIT_UNTIL(pt,micros()-timeStamp > delayTime);
     digitalWrite(stepPin1,LOW); 
     digitalWrite(stepPin2,LOW); 
-    delayMicroseconds(delayTime); 
+    timeStamp = micros();
+    PT_WAIT_UNTIL(pt,micros()-timeStamp > delayTime);
     num_steps--;                        //increments the number of steps left to take 
     Serial.println(num_steps);
     /*
@@ -156,5 +193,5 @@ void loop() {
   digitalWrite(en,HIGH);              //saves power and wont melt the drives or wires
   //Serial.println(steps_left);
 
-
+}
 }
