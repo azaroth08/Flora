@@ -95,10 +95,10 @@ void loop() {
   comm[2] = 0;
   count = 1;
   steps_start = num_steps;
-  delayTime = 25000;
+  delayTime = 15000;
   while (num_steps >0){
     if (comm[0] ==1) {
-      delayTime = 10000;}
+      delayTime = 30000;}
     else if (comm[0] == 0){
       if (num_steps+100 > steps_start) {
         delayTime = delayTime-100;
