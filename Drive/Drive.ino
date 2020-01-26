@@ -72,7 +72,7 @@ static int protoMain(struct pt *pt) {
     Serial.println(num_steps);
 
 
-    digitalWrite(en, LOW);                //Takes one step for each motor, with a delay time as defined earlier
+
     digitalWrite(dirPin1, motor1_dir);
     digitalWrite(dirPin2, motor2_dir);
     digitalWrite(stepPin1, HIGH);
@@ -159,9 +159,10 @@ void loop() {
   steps_start = num_steps;
   delayTime = 15000;
 
-
+  digitalWrite(en, LOW);                //Takes one step for each motor, with a delay time as defined earlier
+  delay(250);
   protoMain(&pt1);
-
+  delay(500);
   digitalWrite(en, HIGH);             //saves power and wont melt the drives or wires
   //Serial.println(steps_left);
 }
