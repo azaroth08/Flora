@@ -58,7 +58,17 @@ static int protoUS1(struct pt *pt) {
 static int protoMain(struct pt *pt) {
   static unsigned long timeStamp = 0;
   PT_BEGIN(pt);
-  while (1) {
+
+  while (num_steps > 0) {
+    if (num_steps + 100 > steps_start) {
+      delayTime = delayTime - 100;
+    }
+    else if (num_steps < 100) {
+      delayTime = delayTime + 100;
+    }
+    else {
+      delayTime = 5000;
+    }
     Serial.println(num_steps);
 
 
@@ -74,6 +84,14 @@ static int protoMain(struct pt *pt) {
     timeStamp = micros();
     PT_WAIT_UNTIL(pt, micros() - timeStamp > delayTime);
 
+    //Serial.print('\t');
+    if (count == 40) {
+      count = 0;
+      //protoUS1(&pt2);
+    }
+    //Serial.print('\n');
+    num_steps--;
+    count++;
   }
   PT_END(pt);
 }
@@ -141,26 +159,9 @@ void loop() {
   steps_start = num_steps;
   delayTime = 15000;
 
-  while (num_steps > 0) {
-    if (num_steps + 100 > steps_start) {
-      delayTime = delayTime - 100;
-    }
-    else if (num_steps < 100) {
-      delayTime = delayTime + 100;
-    }
-    else {
-      delayTime = 5000;
-    }
-    protoMain(&pt1);
-    //Serial.print('\t');
-    if (count == 40) {
-      count = 0;
-      //protoUS1(&pt2);
-    }
-    //Serial.print('\n');
-    num_steps--;
-    count++;
-  }
+
+  protoMain(&pt1);
+
   digitalWrite(en, HIGH);             //saves power and wont melt the drives or wires
   //Serial.println(steps_left);
 }
