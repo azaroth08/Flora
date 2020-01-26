@@ -59,7 +59,6 @@ static int protoDelay(struct pt *pt) {
   static unsigned long timeStamp = 0;
   PT_BEGIN(pt);
   while(1){
-    Serial.println(delayTime);
     timeStamp = micros();
     PT_WAIT_UNTIL(pt, micros() - timeStamp > delayTime);
   }
@@ -170,8 +169,8 @@ void loop() {
     if (count == 40) {
       count = 0;
       protoUS1(&pt2);
+      Serial.println(distance1);
     }
-    //Serial.print('\n');
     num_steps--;
     count++;
   }
