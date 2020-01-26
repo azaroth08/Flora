@@ -34,21 +34,14 @@ int steps_start;
 unsigned int delayTime;
 
 
-static struct pt pt1, pt2,pt3;
+static struct pt pt1, pt2, pt3;
 
 
 static int protoUS1(struct pt *pt) {
   static unsigned long timeStamp = 0;
   PT_BEGIN(pt);
   while (1) {
-    digitalWrite(trigPin, HIGH);
-    timeStamp = micros();
-    PT_WAIT_UNTIL(pt, micros() - timeStamp > 10);
-    digitalWrite(trigPin, LOW);
 
-    duration = pulseIn(echoPin, HIGH);
-
-    distance1 = duration / 2 * 0.034;
     //Serial.print(distance1);
   }
   PT_END(pt);
@@ -58,7 +51,7 @@ static int protoUS1(struct pt *pt) {
 static int protoDelay(struct pt *pt) {
   static unsigned long timeStamp = 0;
   PT_BEGIN(pt);
-  while(1){
+  while (1) {
     timeStamp = micros();
     PT_WAIT_UNTIL(pt, micros() - timeStamp > delayTime);
   }
@@ -69,7 +62,7 @@ static int protoDelay(struct pt *pt) {
 static int protoDelay2(struct pt *pt) {
   static unsigned long timeStamp = 0;
   PT_BEGIN(pt);
-  while(1){
+  while (1) {
     timeStamp = micros();
     PT_WAIT_UNTIL(pt, micros() - timeStamp > delayTime);
   }
@@ -95,7 +88,6 @@ void setup() {
 }
 
 void loop() {
-
   digitalWrite(trigPin, LOW);
   digitalWrite(trigPin2, LOW);
 
@@ -168,7 +160,13 @@ void loop() {
     Serial.print('\t');
     if (count == 40) {
       count = 0;
-      protoUS1(&pt2);
+      digitalWrite(trigPin, HIGH);
+      delayMicroseconds(10);
+      digitalWrite(trigPin, LOW);
+
+      duration = pulseIn(echoPin, HIGH);
+
+      distance1 = duration / 2 * 0.034;
       Serial.println(distance1);
     }
     num_steps--;
