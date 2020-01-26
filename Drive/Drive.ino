@@ -96,19 +96,25 @@ void loop() {
   count = 1;
   steps_start = num_steps;
   delayTime = 15000;
-
   while (num_steps >0){
-    if (num_steps+100 > steps_start) {
-      delayTime = delayTime-100;
+    if (comm[0] ==1) {
+      delayTime = 30000;}
+    else if (comm[0] == 0){
+      if (num_steps+100 > steps_start) {
+        delayTime = delayTime-100;
+      }
+      else if (num_steps<100) {
+        delayTime = delayTime+100;
+      }
+      else {
+        delayTime = 5000;
+      }
     }
-    else if (num_steps<100) {
-      delayTime = delayTime+100;
-    }
-    else {
-      delayTime = 5000;
-    }
-    
     digitalWrite(en,LOW);                 //Takes one step for each motor, with a delay time as defined earlier
+    if (num_steps == steps_start) {
+	delay(250);
+    }
+
     digitalWrite(dirPin1,motor1_dir);    
     digitalWrite(dirPin2,motor2_dir);
     digitalWrite(stepPin1,HIGH); 
@@ -118,7 +124,10 @@ void loop() {
     digitalWrite(stepPin2,LOW); 
     delayMicroseconds(delayTime); 
     num_steps--;                        //increments the number of steps left to take 
-    Serial.println(num_steps);
+    if(num_steps ==0) {
+	delay(500);
+    }
+    //Serial.println(num_steps);
     /*
     if (count ==41){                    //checks for an object in front of flora and its distance on the first 
         count = 0;                      //sensor
@@ -152,7 +161,7 @@ void loop() {
     }*/
   }
                //shuts off the motor drives when Flora isnt moving
-    
+   
   digitalWrite(en,HIGH);              //saves power and wont melt the drives or wires
   //Serial.println(steps_left);
 
