@@ -17,7 +17,7 @@ import time
 import pandas as pd
 import numpy as np
 class Flora(object):
-    def __init__(self, Arduino1='',Arduino2='',Lidar='',WheelRadius = 6.1925, HalfAxleLength = 14.25):
+    def __init__(self, Arduino1='',Arduino2='',Lidar='',WheelRadius = 6.1925/100, HalfAxleLength = 14.25/100):
         Wheel =  'ACM1'
         # Object Properties
         self.WR = WheelRadius  
@@ -40,8 +40,8 @@ class Flora(object):
         #self.mapbytes               = bytearray(MAP_SIZE_PIXELS * MAP_SIZE_PIXELS)
         self.previous_distances     = None
         self.previous_angles        = None
-        self.xoff                   = 6.45  #cm
-        self.yoff                   = 8.805 #cm
+        self.xoff                   = 6.45/100  #m
+        self.yoff                   = 8.805/100 #m
         self.channels               = [1,2,3]
     def __str__(self):
         return '<Wheel radius=%f mm Half axle Length=%f mm>' % \
@@ -158,7 +158,6 @@ class Flora(object):
         return A
 ##ArduinoFunctions(object):
     def drive(self,d):
-        d = d*100
         if d < 0:
             n=1
         else:
@@ -169,6 +168,8 @@ class Flora(object):
             Distance = d
         else:
             Distance = d - RemainingSteps*(self.WR*2*pi)/200
+        
+        return Distance
         
     def Move(self,a,n,s):
         Flag = 1
