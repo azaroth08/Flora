@@ -16,7 +16,7 @@ int distThresh = 25;      // distance threshold to stop Flora
 long duration;            //duration of US pulse, and distance variables
 long duration2;
 int distance1;
-int distance2;       
+int distance2;
 int comm[3];              //variable to hold the parsed serial command
 int num_steps;            //number of steps to take
 int steps_left;           //steps remaning to take
@@ -68,8 +68,8 @@ static int protoMain(struct pt *pt) {
       char* command = strtok(receive, ",");
       int i = 0;
       while (command != 0)
-      {                           //parses the received serial communication
-                                  //into three separate variables, separated by ","
+      { //parses the received serial communication
+        //into three separate variables, separated by ","
         comm[i] = atoi(command);
         i += 1;
         command = strtok(0, ",");
@@ -110,7 +110,7 @@ static int protoMain(struct pt *pt) {
 
     while (num_steps > 0) {
       if (comm[0] == 1) {
-        delayTime = 30000; 
+        delayTime = 30000;
       }
       else if (comm[0] == 0) {  //ramps up and down or sets the constant delay
         if (num_steps + ramp_steps > steps_start) {
@@ -131,7 +131,7 @@ static int protoMain(struct pt *pt) {
 
       digitalWrite(dirPin1, motor1_dir);
       digitalWrite(dirPin2, motor2_dir);
-      digitalWrite(stepPin1, HIGH); 
+      digitalWrite(stepPin1, HIGH);
       digitalWrite(stepPin2, HIGH);
       timeStamp = micros();
       PT_WAIT_UNTIL(pt, micros() - timeStamp > delayTime);
@@ -145,9 +145,9 @@ static int protoMain(struct pt *pt) {
         PT_WAIT_UNTIL(pt, millis() - timeStamp > 500); // helps reduce drift when stopping
         Serial.println(1);
       }
-      if ( comm[0] != 1 && distance1 < distThresh && num_steps > ramp_steps && distance1 !=0 ) {
+      if ( comm[0] != 1 && (distance1 < distThresh || distance2 <distThresh) && num_steps > ramp_steps && distance1 != 0 ) {
         num_steps = ramp_steps;
-        steps_left = num_steps-ramp_steps;
+        steps_left = num_steps - ramp_steps;
       }
     }
     //shuts off the motor drives when Flora isnt moving
@@ -182,5 +182,5 @@ void setup() {
 void loop() {
   protoMain(&pt1);
   protoUS1(&pt2);
-  //  protoUS2(&pt3);
+  protoUS2(&pt3);
 }
