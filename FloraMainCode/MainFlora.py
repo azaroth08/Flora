@@ -9,16 +9,18 @@ Flora Main Script
 """
 
 import vehicles
-import sensors
+#import sensors
 from algorithms import *
 from breezyslam.algorithms import RMHC_SLAM
-from breezyslam.sensors import YDLidarX2 as LaserModel
-import Lidar
-from roboviz import MapVisualizer
+#from breezyslam.sensors import YDLidarX2 as LaserModel
+#import Lidar
+#from roboviz import MapVisualizer
 import Navigation
 from Methods import *
 from operator import itemgetter
 from math import pi
+import time
+import pandas as pd
 wheelRadius_mm = 100
 halfAxleLength_mm = 150
 MAP_SIZE_PIXELS   = 500
@@ -30,28 +32,41 @@ MIN_SAMPLES   = 200
 
 
 def Exploration(Flora):
-    L  = [[0,2],[1,2],[1,0],[0,0]];
-    Flora.drive(2)
-    Flora.rotate(pi/2)
-    Flora.drive(1)
-    Flora.rotate(pi/2)
-    Flora.drive(2)
-    Flora.rotate(pi)
-    return 1
+    data=[]
+    L  = [2,1,2,1];
+    for i in range(len(L)):
+        for j in range(2):
+            Flora.drive(L[i]/2)
+            time.sleep(1)
+            tmp=Flora.scan()
+            data.append(tmp)
+            tmp.to_csv('scans/LD'+str(i)+str(j)+'.csv')
+        Flora.rotate(pi/2)
+        time.sleep(1)
+        tmp=Flora.scan()
+        data.append(tmp)
+        tmp.to_csv('scans/LD_T_'+str(i)+str(j)+'.csv')
+    return data
 
 def PlantFindIR(Flora):
     theta = Flora.getIRangle()
     Flora.rotate(theta)
     while(1):
-        Scan = Flora.scan()
-        d,theta = FilterPoints(Scan,-5,5)
-        if min(d) <= 500:
-            theta = FindPlantCenter(Flora.scan())
+        time.sleep(0.5)
+        theta = Flora.getIRangle()
+        Flora.rotate(theta)
+        scan = Flora.scan()
+        ScanF = FilterPoints(scan,-0.0872,0.0872)
+        DistFromPlant=min(ScanF.d)
+        print(DistFromPlant)
+        if DistFromPlant <= 0.5:
+            #theta = FindPlantCenter(Flora.scan())
             # Extrapolate From point cloud if Flora is within Allowed distance
-            if theta > x:
-                Flora.rotate(Xamount)
-            Flora.drive(d)
-        D = min(d)/2
+            #if theta > x:
+            #    Flora.rotate(theta)
+            #Flora.drive(d)
+            break
+        D = min(DistFromPlant)/2
         Flora.drive(D)
     return 1
 

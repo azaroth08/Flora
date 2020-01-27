@@ -14,39 +14,48 @@ import numpy as np
 from PIL import Image
 
 def CartesianPolar(x,y):
-    # Takes x,y gets angle changes reference frame to lidar -> In rad
+    #Takes x,y gets angle changes reference frame to lidar -> In rad
     theta = pi-pi/2*(1+sign(x))*(1-sign(y**2))-pi/4*(2+sign(x))*sign(y)-sign(x*y)*atan((abs(x)-abs(y))/(abs(x)+abs(y)))
     theta = (-theta+pi/2)%(2*pi)
     d = sqrt(x**2+y**2)
     return d,theta
 
 def ScanOffset(Flora,scan): #xy are offset from center of Flora
-    x=Flora.xoff
-    y=Flora.yoff
-    d,theta = scan.d,scan.theta
-    for i in range(len(x)):
-        tmp = CartesianPolar(x[i],y[i])
-        d = tmp[0]
-        theta = tmp[1]
+    xoff=Flora.xoff
+    yoff=Flora.yoff
+    tmpx,tmpy =ScanXY(Flora,scan)
+    d = []
+    theta = []
+    for i in range(len(tmpx)):
+        tmp = CartesianPolar(tmpx[i],tmpy[i])
+        d.append(tmp[0])
+        theta.append(tmp[1])
+    return d,theta
         
 def ScanXY(Flora,scan,Offset=1):
     'Offset = 1 -> xy from center flora, Offset = 0 -> xy from lidar'
+    #x = np.ndarray.tolist(np.sin(scan.theta)*scan.d)
+    #y = np.ndarray.tolist(np.cos(scan.theta)*scan.d)
+    x = np.sin(scan.theta)*(scan.d)
+    y = np.cos(scan.theta)*(scan.d)
     if Offset:
-        scan=ScanOffset(Flora,scan)
-    x = np.ndarray.tolist(np.sin(scan.theta)*scan.d)
-    y = np.ndarray.tolist(np.cos(scan.theta)*scan.d)
+        x = x-Flora.xoff
+        y = y-Flora.yoff
     return x,y
 
 def FilterPoints(scan,minD,maxD):
-    d = []
-    theta = []
-    for i in range(len(scan)):
+    dd = []
+    ttheta = []
+    class newscan:
+        pass
+    for i in range(len(scan.d)):
         if (scan.theta[i] >= minD) and (scan.theta[i] <= maxD):
-            theta.append(scan.theta[i]);
-            d.append(scan.d)
-    scan.d = d
-    scan.theta = theta
-    return scan
+            ttheta.append(scan.theta[i]);
+            dd.append(scan.d[i])
+    newscan.d = np.asarray(dd)
+    newscan.theta = np.asarray(ttheta)
+    return newscan
+
 def ConvertMapToScatter(Flora,T):
     LT = -0.0001
     HT = T

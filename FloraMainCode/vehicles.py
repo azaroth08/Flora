@@ -5,6 +5,7 @@ All distances in mm
 All angles in rad
 
 '''
+import smbus
 import math
 from math import pi,degrees,radians
 from numpy import sign
@@ -12,7 +13,9 @@ import serial
 #from Lidar import Lidar
 from Methods import CartesianPolar
 from breezyslam.algorithms import RMHC_SLAM
-
+import time
+import pandas as pd
+import numpy as np
 class Flora(object):
     def __init__(self, Arduino1,Arduino2,Lidar,WheelRadius = 6.1925, HalfAxleLength = 14.25):
         # Object Properties
@@ -25,7 +28,7 @@ class Flora(object):
         self.Pose                   = [0,0,0]
         self.PoseEstimate           = [0,0,0]
         #Initialize Communication to Peripherals
-        self.Arduino1               = serial.Serial(Arduino1,baudrate=9600) #Arduino1 = Drive
+        #self.Arduino1               = serial.Serial(Arduino1,baudrate=9600) #Arduino1 = Drive
         #self.Arduino2               = serial.Serial(Arduino2,baudrate=9600) #Arduino2 = Arm
         self.Lidar                  = "/home/pi/LidarData/LD"
         # Initialize BreZZySlammms
@@ -34,9 +37,11 @@ class Flora(object):
         #self.mapbytes               = bytearray(MAP_SIZE_PIXELS * MAP_SIZE_PIXELS)
         self.previous_distances     = None
         self.previous_angles        = None
+        self.xoff                   = 6.45  #cm
+        self.yoff                   = 8.805 #cm
     def __str__(self):
         return '<Wheel radius=%f mm Half axle Length=%f mm>' % \
-        (self.WR, self.HA)
+        (self.WR, self.HAL)
         
     def __repr__(self):      
         return self.__str__()
@@ -59,11 +64,41 @@ class Flora(object):
             self.Move(1,Turn,Steps)
             
     def scan(self):
-       tmp= pd.read_csv(self.Lidar)
-       d,theta = scan()
-       return d,theta  
+        tmp= pd.read_csv(self.Lidar)
+       #scan = tmp.rename(columns={'range': 'd', 'angle':'theta'})
+        class scan:
+           pass
+        dd = []
+        ttheta = []
+        for i in range(len(tmp.range)):
+            if (tmp.range[i]>0.01):
+                ttheta.append(tmp.angle[i]);
+                dd.append(tmp.range[i])
+        scan.d = np.asarray(dd)
+        scan.theta = np.asarray(ttheta)
+        
+        #scan.d = tmp.range.values
+        #scan.theta = tmp.angle.values
+        
+       #d,theta = tmp.range,tmp.angle
+        return scan   
    
-    def getIRangle(self):       
+    def getIRangle(self):
+                
+        # I2C channel 1 is connected to the GPIO pins
+        channel = 1
+
+
+        #  MCP4725 defaults to address 0x60
+        Sensor_Address = 0x0E
+        Heading_Register = 0x04 # 1200Hz
+        Strength_Register = 0x05 # 1200Hz
+
+        # Initialize I2C (SMBus)
+        bus = smbus.SMBus(channel)
+        Heading = bus.read_i2c_block_data(Sensor_Address, Heading_Register, 1)
+        Strength = bus.read_i2c_block_data(Sensor_Address, Strength_Register, 1)
+        angle = radians((Heading*5-90)%360)
         return angle
     
     def ArduinoD(self):
@@ -72,7 +107,8 @@ class Flora(object):
     def Send(self,obj,cmd):
         #Send Serial Commands to arduino
         print(cmd)
-        obj
+        obj.flushInput()
+        obj.flushOutput()
         obj.write(bytes(cmd,'utf-8'))
 
     def query(self,obj,cmd): #Query Serial Commands to arduino
@@ -82,6 +118,7 @@ class Flora(object):
         return A
 ##ArduinoFunctions(object):
     def drive(self,d):
+        d = d/100
         if d < 0:
             n=1
         else:
@@ -92,10 +129,12 @@ class Flora(object):
     def Move(self,a,n,s):
         Flag = 1
         self.Send(self.Arduino1,str(a)+','+str(n)+','+str(s))
-        #while Flag:
-            #Flag = query(Flag)
-            #pause(0.01)
-        #return Flag
+        while Flag:
+            tmp=self.Arduino1.read_all()
+            if len(tmp)>0:
+                Flag = 0
+            time.sleep(0.2)
+
     
     def Ultrasonic(self,n):
         D = query('u,'+str(n))
