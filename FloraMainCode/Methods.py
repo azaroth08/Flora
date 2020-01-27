@@ -21,8 +21,8 @@ def CartesianPolar(x,y):
     return d,theta
 
 def ScanOffset(Flora,scan): #xy are offset from center of Flora
-    xoff=Flora.xoff
-    yoff=Flora.yoff
+    class newscan:
+        pass
     tmpx,tmpy =ScanXY(Flora,scan)
     d = []
     theta = []
@@ -30,7 +30,9 @@ def ScanOffset(Flora,scan): #xy are offset from center of Flora
         tmp = CartesianPolar(tmpx[i],tmpy[i])
         d.append(tmp[0])
         theta.append(tmp[1])
-    return d,theta
+    newscan.d = np.asarray(d)
+    newscan.theta = np.asarray(theta)
+    return newscan
         
 def ScanXY(Flora,scan,Offset=1):
     'Offset = 1 -> xy from center flora, Offset = 0 -> xy from lidar'

@@ -17,7 +17,8 @@ import time
 import pandas as pd
 import numpy as np
 class Flora(object):
-    def __init__(self, Arduino1,Arduino2,Lidar,WheelRadius = 6.1925, HalfAxleLength = 14.25):
+    def __init__(self, Arduino1='',Arduino2='',Lidar='',WheelRadius = 6.1925, HalfAxleLength = 14.25):
+        Wheel =  'ACM1'
         # Object Properties
         self.WR = WheelRadius  
         self.HAL = HalfAxleLength
@@ -28,8 +29,10 @@ class Flora(object):
         self.Pose                   = [0,0,0]
         self.PoseEstimate           = [0,0,0]
         #Initialize Communication to Peripherals
-        #self.Arduino1               = serial.Serial(Arduino1,baudrate=9600) #Arduino1 = Drive
-        #self.Arduino2               = serial.Serial(Arduino2,baudrate=9600) #Arduino2 = Arm
+        if len(Arduino1)>0:
+            self.Arduino1           = serial.Serial(Arduino1,baudrate=9600) #Arduino1 = Drive
+        if len(Arduino2)>0:
+            self.Arduino2           = serial.Serial(Arduino2,baudrate=9600) #Arduino2 = Arm
         self.Lidar                  = "/home/pi/LidarData/LD"
         # Initialize BreZZySlammms
         #self.slam                   = RMHC_SLAM(LaserModel(), MAP_SIZE_PIXELS, MAP_SIZE_METERS)
@@ -39,6 +42,7 @@ class Flora(object):
         self.previous_angles        = None
         self.xoff                   = 6.45  #cm
         self.yoff                   = 8.805 #cm
+        self.channels               = [1,2,3]
     def __str__(self):
         return '<Wheel radius=%f mm Half axle Length=%f mm>' % \
         (self.WR, self.HAL)
@@ -83,12 +87,10 @@ class Flora(object):
        #d,theta = tmp.range,tmp.angle
         return scan   
    
-    def getIRangle(self):
+    def SHITgetIRangle(self):
                 
         # I2C channel 1 is connected to the GPIO pins
         channel = 1
-
-
         #  MCP4725 defaults to address 0x60
         Sensor_Address = 0x0E
         Heading_Register = 0x04 # 1200Hz
@@ -101,8 +103,46 @@ class Flora(object):
         angle = radians((Heading*5-90)%360)
         return angle
     
-    def ArduinoD(self):
-        pass
+    def getIRangle(self):
+        Heading =255
+        angle = -1 # if out of range angle = -1
+        for i in range(5): # Try 5 times to get angle
+            angle = 0
+            self.Send(self.Arduino2,'4')
+            Flag= 1
+            while(Flag):
+                time.sleep(0.2)
+                tmp=self.Arduino2.read_all()
+                if len(tmp)>0:
+                    Flag = 0
+            Heading=int(tmp)
+            if(Heading != 255):
+                angle = radians((Heading*5-90)%360)
+                break
+        return angle
+    
+    def Water(self):
+        self.Send(self.Arduino2,'5')
+        while(Flag):
+            time.sleep(0.2)
+            tmp=self.Arduino2.read_all()
+            if len(tmp)>0:
+                Flag = 0
+        return not Flag
+    
+    def RFScan(self,channel):
+        c = string(channel)
+        self.Send(self.Arduino2,c)
+        while(Flag):
+            time.sleep(0.2)
+            tmp=self.Arduino2.read_all()
+            if len(tmp)>0:
+                Flag = 0        
+        RF = int(tmp)
+        # Plant Already Watered, RF = 0
+        # Plant Needs Water, RF=1
+        # Plant Not Found, RF =2
+        return RF
 ##  ArduinoMedley
     def Send(self,obj,cmd):
         #Send Serial Commands to arduino
@@ -118,13 +158,17 @@ class Flora(object):
         return A
 ##ArduinoFunctions(object):
     def drive(self,d):
-        d = d/100
+        d = d*100
         if d < 0:
             n=1
         else:
             n=0
         s = round(200*abs(d)/(self.WR*2*pi))
-        self.Move(0,n,s)
+        RemainingSteps = self.Move(0,n,s)
+        if RemainingSteps ==0 :
+            Distance = d
+        else:
+            Distance = d - RemainingSteps*(self.WR*2*pi)/200
         
     def Move(self,a,n,s):
         Flag = 1
@@ -134,7 +178,7 @@ class Flora(object):
             if len(tmp)>0:
                 Flag = 0
             time.sleep(0.2)
-
+        return int(tmp)
     
     def Ultrasonic(self,n):
         D = query('u,'+str(n))
