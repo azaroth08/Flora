@@ -126,6 +126,7 @@ void loop() {
     num_steps--;                        //increments the number of steps left to take 
     if(num_steps ==0) {
 	delay(500);
+	Serial.println(1);
     }
     //Serial.println(num_steps);
     /*
