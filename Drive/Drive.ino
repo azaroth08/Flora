@@ -31,6 +31,7 @@ int comm[3];
 int num_steps;
 int steps_left;
 int steps_start;
+int ramp_steps;
 unsigned int delayTime;
 
 
@@ -65,9 +66,6 @@ void loop() {
     // Find the next command in input string
         command = strtok(0, ",");
     }
-    //Serial.println(comm[0]);
-    //Serial.println(comm[1]);
-    //Serial.println(comm[2]);
   }
 
   if (comm[0] == 0){
@@ -96,14 +94,21 @@ void loop() {
   count = 1;
   steps_start = num_steps;
   delayTime = 15000;
+  if (num_steps <200){
+    ramp_steps = num_steps/2;
+  }
+  else {
+    ramp_steps = 100;
+  }
+  
   while (num_steps >0){
     if (comm[0] ==1) {
       delayTime = 30000;}
     else if (comm[0] == 0){
-      if (num_steps+100 > steps_start) {
+      if (num_steps+ramp_steps > steps_start) {
         delayTime = delayTime-100;
       }
-      else if (num_steps<100) {
+      else if (num_steps<ramp_steps) {
         delayTime = delayTime+100;
       }
       else {
