@@ -162,7 +162,7 @@ static int protoMain(struct pt *pt) {
 
 
 void setup() {
-  // Sets the two pins as Outputs
+  // initialize the output and input pins, serial, and pt threads
   pinMode(stepPin1, OUTPUT);
   pinMode(dirPin1, OUTPUT);
   pinMode(stepPin2, OUTPUT);
@@ -179,8 +179,8 @@ void setup() {
   PT_INIT(&pt3);
 
 }
-void loop() {
-  protoMain(&pt1);
-  protoUS1(&pt2);
+void loop() {  //continuously loop the pt functions.  See full
+  protoMain(&pt1);  //documentation to try and understand because
+  protoUS1(&pt2);   // the concept makes absolutely no sense to me
   protoUS2(&pt3);
 }
