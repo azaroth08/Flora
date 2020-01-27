@@ -23,6 +23,7 @@ int steps_left;           //steps remaning to take
 int steps_start;          //number of steps to begin with
 int ramp_steps;           //number of steps to ramp the speed up and down with
 unsigned int delayTime;   //the length of pause between each step
+int Flag = 0;                 // Flag for US interruption
 
 static struct pt pt1, pt2, pt3;   //protothread structures
 
@@ -143,11 +144,17 @@ static int protoMain(struct pt *pt) {
       if (num_steps == 0) {
         timeStamp = millis();  //adds a delay to the motor shut off.
         PT_WAIT_UNTIL(pt, millis() - timeStamp > 500); // helps reduce drift when stopping
-        Serial.println(1);
+        if (Flag) {
+          Serial.println(steps_left);
+        }
+        else {
+          Serial.println(0);
+        }
       }
       if ( comm[0] != 1 && (distance1 < distThresh || distance2 <distThresh) && num_steps > ramp_steps && distance1 != 0 ) {
         num_steps = ramp_steps;
         steps_left = num_steps - ramp_steps;
+        Flag = 1;
       }
     }
     //shuts off the motor drives when Flora isnt moving
