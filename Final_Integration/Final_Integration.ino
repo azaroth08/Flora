@@ -187,6 +187,11 @@ void setup() {
   // start arm flat
   shoulderAngle(P_Servo, M_Servo, 0, 2, stepSize);
   elbowAngle(E_Servo, 15, 17, stepSize);
+
+//   DELETE AFTER CHECK
+  delay(1000)                                         // DELETE
+  shoulderAngle(P_Servo, M_Servo, 2, 70, stepSize);   // DELETE
+  elbowAngle(E_Servo, 17, 150, stepSize);             // DELETE
   
 //Watering Setup
   pinMode(stepPin,OUTPUT); 
