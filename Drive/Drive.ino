@@ -38,7 +38,6 @@ static int protoUS1(struct pt *pt) {
     digitalWrite(trigPin, LOW);
     duration = pulseIn(echoPin, HIGH, 3000);
     distance1 = duration / 2 * 0.034;
-    Serial.println(distance1);
   }
   PT_END(pt);
 }
@@ -54,7 +53,6 @@ static int protoUS2(struct pt *pt) {
     digitalWrite(trigPin2, LOW);
     duration2 = pulseIn(echoPin2, HIGH, 30000);
     distance2 = duration2 / 2 * 0.034;
-    Serial.println(distance2);
   }
   PT_END(pt);
 }
