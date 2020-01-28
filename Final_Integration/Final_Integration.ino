@@ -59,35 +59,6 @@ int DO; // Command from Pi
 
 
 
-void setup() {
-  // Water Sensing and Refilling 
-  pinMode(pumpPin,OUTPUT); // pump signal pin
-  pinMode(powerPin,OUTPUT); // power pin for the water level sensor 
-  pinMode(levelPin,INPUT); // Analog water level read  
-  
-  //servo setup
-  P_Servo.attach(8,600,2500);  // (pin, min, max)(with P and scratch)
-  M_Servo.attach(6,600,2500);
-  E_Servo.attach(7,600,2500); //20 is flat, 180 is extended
-
-//Watering Setup
-  pinMode(stepPin,OUTPUT); 
-  pinMode(dirPin,OUTPUT);
-  pinMode(stopPin,OUTPUT);
-  digitalWrite(stopPin,HIGH);
- // digitalWrite(powerPin,HIGH);
-
-  //RF Setup
-  //while (!Serial);
-  Serial.begin(9600);
-  radio.begin(); 
-  radio.openWritingPipe(TxPlant1);
-  radio.openReadingPipe(0, RxPlant1);
-  radio.stopListening();
-  
-  // IR Locator Setup 
-  Wire.begin();
-}
 
 
 
@@ -138,7 +109,7 @@ void shoulderAngle(Servo p, Servo m, int startAngle, int endAngle, int stepSize)
 }
 
 // DISPENSE WATER 
-void rotation(int water) {
+void rotation(int water = 50) {
   digitalWrite(dirPin,LOW); // Low dirPin is outputting water
   // 200 pulses in one revolution
   float rev = (water + 18.0)/1.66 ; 
@@ -206,6 +177,37 @@ strength = Wire.read();
 }
 }
 
+void setup() {
+  // Water Sensing and Refilling 
+  pinMode(pumpPin,OUTPUT); // pump signal pin
+  pinMode(powerPin,OUTPUT); // power pin for the water level sensor 
+  pinMode(levelPin,INPUT); // Analog water level read  
+  
+  //servo setup
+  P_Servo.attach(8,600,2500);  // (pin, min, max)(with P and scratch)
+  M_Servo.attach(6,600,2500);
+  E_Servo.attach(7,600,2500); //20 is flat, 180 is extended
+
+  shoulderAngle(P_Servo, M_Servo, 0,2, stepSize);
+  elbowAngle(E_Servo, 15, 17, stepSize);
+//Watering Setup
+  pinMode(stepPin,OUTPUT); 
+  pinMode(dirPin,OUTPUT);
+  pinMode(stopPin,OUTPUT);
+  digitalWrite(stopPin,HIGH);
+ // digitalWrite(powerPin,HIGH);
+
+  //RF Setup
+  //while (!Serial);
+  Serial.begin(9600);
+  radio.begin(); 
+  radio.openWritingPipe(TxPlant1);
+  radio.openReadingPipe(0, RxPlant1);
+  radio.stopListening();
+  
+  // IR Locator Setup 
+  Wire.begin();
+}
 
 
 // MAIN LOOP
