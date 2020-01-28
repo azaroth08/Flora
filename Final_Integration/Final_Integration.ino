@@ -134,7 +134,7 @@ void rotation(int water = 50) {
 // Watering Module 
 void Watering(int water) {
     
-    int angles[2] = {70, 110};
+    int angles[2] = {70, 130};
     
     shoulderAngle(P_Servo, M_Servo, 0, angles[0], stepSize);
   
