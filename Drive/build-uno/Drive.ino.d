@@ -8,4 +8,7 @@ build-uno/Drive.ino.o: Drive.ino \
  /usr/share/arduino/hardware/arduino//cores/arduino/Print.h \
  /usr/share/arduino/hardware/arduino//cores/arduino/Printable.h \
  /usr/share/arduino/hardware/arduino//cores/arduino/new.h \
- /usr/share/arduino/hardware/arduino//variants/standard/pins_arduino.h
+ /usr/share/arduino/hardware/arduino//variants/standard/pins_arduino.h \
+ /usr/share/arduino/libraries/pt/pt.h \
+ /usr/share/arduino/libraries/pt/lc.h \
+ /usr/share/arduino/libraries/pt/lc-switch.h
