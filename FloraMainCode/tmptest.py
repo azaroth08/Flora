@@ -11,7 +11,7 @@ class Flora:
     pass
 Flora.MSP = 1000
 P=[(0,0,0),(1000,0,1)]
-for i in range(2):
+for i in range(1):
     a=str(i)
     ld=pd.read_csv('/home/pi/Flora/FloraMainCode/scans/LD0'+a+'.csv')
     tmpd=ld.range*1000

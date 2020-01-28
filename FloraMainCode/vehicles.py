@@ -122,6 +122,7 @@ class Flora(object):
         return angle
     
     def Water(self):
+        Flag =1
         self.Send(self.Arduino2,'5')
         while(Flag):
             time.sleep(0.2)
@@ -133,6 +134,7 @@ class Flora(object):
     def RFScan(self,channel):
         c = string(channel)
         self.Send(self.Arduino2,c)
+        Flag=1
         while(Flag):
             time.sleep(0.2)
             tmp=self.Arduino2.read_all()
