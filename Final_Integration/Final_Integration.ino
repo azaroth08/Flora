@@ -136,9 +136,9 @@ void Watering(int water) {
     
     int angles[2] = {70, 130};
     
-    shoulderAngle(P_Servo, M_Servo, 0, angles[0], stepSize);
+    shoulderAngle(P_Servo, M_Servo, 2, angles[0], stepSize);
   
-    elbowAngle(E_Servo, 15, angles[1], stepSize);
+    elbowAngle(E_Servo, 17, angles[1], stepSize);
   
     delay(2000);
 
@@ -148,10 +148,10 @@ void Watering(int water) {
     rotation(water); // call watering  
     digitalWrite(stopPin,HIGH); // disable stepper 
     
-    elbowAngle(E_Servo, angles[1], 15, stepSize); // retract Elbow 
+    elbowAngle(E_Servo, angles[1], 17, stepSize); // retract Elbow 
     
     //P is at 175, M is at 0
-    shoulderAngle(P_Servo, M_Servo, angles[0], 0, stepSize); // retract Shoulder 
+    shoulderAngle(P_Servo, M_Servo, angles[0], 2, stepSize); // retract Shoulder 
   }
 
 
@@ -184,8 +184,15 @@ void setup() {
   M_Servo.attach(6,600,2500);
   E_Servo.attach(7,600,2500); //20 is flat, 180 is extended
 
-  shoulderAngle(P_Servo, M_Servo, 0,2, stepSize);
+  // start arm flat
+  shoulderAngle(P_Servo, M_Servo, 0, 2, stepSize);
   elbowAngle(E_Servo, 15, 17, stepSize);
+
+//   DELETE AFTER CHECK
+  delay(1000)
+  shoulderAngle(P_Servo, M_Servo, 2, 70, stepSize);
+  elbowAngle(E_Servo, 17, 150, stepSize);
+  
 //Watering Setup
   pinMode(stepPin,OUTPUT); 
   pinMode(dirPin,OUTPUT);
