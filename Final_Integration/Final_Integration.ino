@@ -134,7 +134,7 @@ void rotation(int water = 50) {
 // Watering Module 
 void Watering(int water) {
     
-    int angles[2] = {70, 130};
+    int angles[2] = {70, 100};
     
     shoulderAngle(P_Servo, M_Servo, 2, angles[0], stepSize);
   
@@ -187,11 +187,6 @@ void setup() {
   // start arm flat
   shoulderAngle(P_Servo, M_Servo, 0, 2, stepSize);
   elbowAngle(E_Servo, 15, 17, stepSize);
-
-//   DELETE AFTER CHECK
-  delay(1000)
-  shoulderAngle(P_Servo, M_Servo, 2, 70, stepSize);
-  elbowAngle(E_Servo, 17, 150, stepSize);
   
 //Watering Setup
   pinMode(stepPin,OUTPUT); 
