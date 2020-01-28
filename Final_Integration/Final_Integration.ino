@@ -138,7 +138,7 @@ void Watering(int water) {
     
     shoulderAngle(P_Servo, M_Servo, 2, angles[0], stepSize);
   
-    elbowAngle(E_Servo, 17, angles[1], stepSize);
+    elbowAngle(E_Servo, 17, angles[1], stepSize/2);
   
     delay(2000);
 
