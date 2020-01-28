@@ -124,7 +124,7 @@ void shoulderAngle(Servo p, Servo m, int startAngle, int endAngle, int stepSize)
     {
       p.write(pos);
       m.write(Mangle0-pos);
-      delay(100);
+      delay(20*stepSize);
     }
   }
   else{   //  extending
@@ -132,7 +132,7 @@ void shoulderAngle(Servo p, Servo m, int startAngle, int endAngle, int stepSize)
     {
       p.write(pos);
       m.write(Mangle0-pos);
-      delay(100);
+      delay(20*stepSize);
     }
   }
 }
