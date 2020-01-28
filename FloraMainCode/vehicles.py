@@ -107,7 +107,6 @@ class Flora(object):
         Heading =255
         angle = -1 # if out of range angle = -1
         for i in range(5): # Try 5 times to get angle
-            angle = 0
             self.Send(self.Arduino2,'4')
             Flag= 1
             while(Flag):

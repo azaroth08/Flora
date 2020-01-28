@@ -95,7 +95,7 @@ void shoulderAngle(Servo p, Servo m, int startAngle, int endAngle, int stepSize)
     {
       p.write(pos);
       m.write(Mangle0-pos);
-      delay(20*stepSize);
+      delay(35*stepSize);
     }
   }
   else{   //  extending
@@ -103,7 +103,7 @@ void shoulderAngle(Servo p, Servo m, int startAngle, int endAngle, int stepSize)
     {
       p.write(pos);
       m.write(Mangle0-pos);
-      delay(20*stepSize);
+      delay(35*stepSize);
     }
   }
 }
@@ -134,12 +134,12 @@ void rotation(int water = 50) {
 // Watering Module 
 void Watering(int water) {
     
-    int angles[2] = {70, 150};
+    int angles[2] = {90, 120};
     
+  
+    elbowAngle(E_Servo, 17, angles[1], stepSize);
+ 
     shoulderAngle(P_Servo, M_Servo, 2, angles[0], stepSize);
-  
-    elbowAngle(E_Servo, 17, angles[1], stepSize/2);
-  
     delay(2000);
 
     // WATER DISPENSING
@@ -147,11 +147,11 @@ void Watering(int water) {
     digitalWrite(stopPin,LOW); // enable stepper
     rotation(water); // call watering  
     digitalWrite(stopPin,HIGH); // disable stepper 
-    
+      
+    shoulderAngle(P_Servo, M_Servo, angles[0], 2, stepSize); // retract Shoulder 
     elbowAngle(E_Servo, angles[1], 17, stepSize); // retract Elbow 
     
     //P is at 175, M is at 0
-    shoulderAngle(P_Servo, M_Servo, angles[0], 2, stepSize); // retract Shoulder 
   }
 
 

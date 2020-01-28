@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from collections import deque
 from math import pi
 import pandas as pd
-EXTEND_AREA = 2.0
+EXTEND_AREA = 10.0
 
 
 def file_read(f):
@@ -189,66 +189,16 @@ def generate_ray_casting_grid_map(ox, oy, xyreso,Off,pmap,i, breshen=True):
     return pmap, minx, maxx, miny, maxy, xyreso
 
 
-def main():
+def GetMap(Flora,scan):
     """
     Example usage
     """
-    
-    #print(__file__, "start")
     xyreso = 0.1  # x-y grid resolution
-    #ang, dist = file_read("LD1.csv")
-    class Flora:
-        pass
-    class nsf:
-        pass
-    nsf.d = np.ndarray(0)
-    nsf.theta = np.ndarray(0)
-    FileList = ['LD00.csv','LD01.csv','LD_T_01.csv','LD10.csv','LD11.csv','LD_T_11.csv']
-    for j in [1]:#range(len(FileList)):
-        tmp=pd.read_csv('/home/pi/Flora/FloraMainCode/scans/'+FileList[j])
-        Pose = [[0,1,0],[0,0+2,0],[0,0+2,-pi/2],
-                [0-0.5,0+2,-pi/2],[0-1,0+2,-pi/2],[0-1,0+2,-pi],
-                [0-1,0+1,-pi],[0-1,0,-pi],[0-1,0,-3*pi/2]]
-        tmp.angle = (tmp.angle+Pose[j][2])%(2*pi)
-        Flora.xoff = Pose[j][0]
-        Flora.yoff = Pose[j][1]
-        class scan:
-           pass
-        dd = []
-        ttheta = []
-        for i in range(len(tmp.range)):
-            if (tmp.range[i]>0.01):
-                ttheta.append(tmp.angle[i]);
-                dd.append(tmp.range[i])
-        scan.d = np.asarray(dd)
-        scan.theta = np.asarray(ttheta)
-        ns = ScanOffset(Flora,scan)
-        nsf.d=np.concatenate((nsf.d,ns.d))
-        nsf.theta =np.concatenate((nsf.theta,ns.theta))
-    ang,dist = nsf.theta,nsf.d*1000;
+    ang,dist = scan.theta,scan.d*1000;
     ox = np.sin(ang) * dist/1000
     oy = np.cos(ang) * dist/1000
     Of=0
     pmap=0
-    for i in range(3):
-        pmap, minx, maxx, miny, maxy, xyreso = generate_ray_casting_grid_map(ox, oy, xyreso,Of,pmap,i, False)
+    pmap, minx, maxx, miny, maxy, xyreso = generate_ray_casting_grid_map(ox, oy, xyreso,Of,pmap,i, False)
     xyres = np.array(pmap).shape
-    
-    plt.figure(j, figsize=(10,4))
-    plt.subplot(122)
-    plt.imshow(pmap, cmap="PiYG_r") # cmap = "binary" "PiYG_r" "PiYG_r" "bone" "bone_r" "RdYlGn_r"
-    plt.clim(-0.4, 1.4)
-    plt.gca().set_xticks(np.arange(-.5, xyres[1], 1), minor=True)
-    plt.gca().set_yticks(np.arange(-.5, xyres[0], 1), minor=True)
-    plt.grid(True, which="minor", color="w", linewidth=0.6, alpha=0.5)
-    plt.colorbar()
-    plt.subplot(121)
-    plt.plot([oy, np.zeros(np.size(oy))], [ox, np.zeros(np.size(oy))], "ro-")
-    plt.axis("equal")
-    plt.plot(0.0, 0.0, "ob")
-    plt.gca().set_aspect("equal", "box")
-    bottom, top = plt.ylim()  # return the current ylim
-    plt.ylim((top, bottom)) # rescale y axis, to match the grid orientation
-    plt.grid(True)
-    plt.show()
-        
+    return pmap

@@ -12,7 +12,7 @@ const int trigPin = 10;   //Ultrasonic control pins
 const int echoPin = 11;
 const int trigPin2 = 12;
 const int echoPin2 = 13;
-int distThresh = 25;      // distance threshold to stop Flora
+int distThresh = 30;      // distance threshold to stop Flora
 long duration;            //duration of US pulse, and distance variables
 long duration2;
 int distance1;
@@ -106,7 +106,7 @@ static int protoMain(struct pt *pt) {
     else {
       ramp_steps = 100;
     }
-
+    Flag = 0;
     while (num_steps > 0) {
       if (comm[0] == 1) {
         delayTime = 30000;
@@ -142,17 +142,17 @@ static int protoMain(struct pt *pt) {
       if (num_steps == 0) {
         timeStamp = millis();  //adds a delay to the motor shut off.
         PT_WAIT_UNTIL(pt, millis() - timeStamp > 500); // helps reduce drift when stopping
-        if (Flag) {
+        if (Flag == 1) {
           Serial.println(steps_left);
         }
-        else {
+        else if (Flag == 0){
           Serial.println(0);
         }
       }
-      if ( comm[0] != 1 && (distance1 < distThresh || distance2 <distThresh) && num_steps > ramp_steps && distance1 != 0 ) {
-        num_steps = ramp_steps;
+      if ( comm[0] != 1 && ((distance1 < distThresh && distance1 != 0) || (distance2 <distThresh && distance2 != 0)) && num_steps > ramp_steps ) {
         steps_left = num_steps - ramp_steps;
-        Flag = 1;
+        num_steps = ramp_steps;        
+        Flag = 1;;
       }
     }
     //shuts off the motor drives when Flora isnt moving
@@ -186,6 +186,6 @@ void setup() {
 }
 void loop() {  //continuously loop the pt functions.  See full
   protoMain(&pt1);  //documentation to try and understand because
-  protoUS1(&pt2);   // the concept makes absolutely no sense to me
-  protoUS2(&pt3);
+  //protoUS1(&pt2);   // the concept makes absolutely no sense to me
+  //protoUS2(&pt3);
 }

@@ -16,9 +16,9 @@ from PIL import Image
 def CartesianPolar(x,y):
     #Takes x,y gets angle changes reference frame to lidar -> In rad
     theta = pi-pi/2*(1+sign(x))*(1-sign(y**2))-pi/4*(2+sign(x))*sign(y)-sign(x*y)*atan((abs(x)-abs(y))/(abs(x)+abs(y)))
-    theta = (-theta+pi/2)%(2*pi)
+    theta2 = (-theta+pi/2)%(2*pi)
     d = sqrt(x**2+y**2)
-    return d,theta
+    return d,theta2
 
 def ScanOffset(Flora,scan): #xy are offset from center of Flora
     class newscan:

@@ -21,6 +21,7 @@ from operator import itemgetter
 from math import pi
 import time
 import pandas as pd
+from SimpleMap import *
 wheelRadius_mm = 100
 halfAxleLength_mm = 150
 MAP_SIZE_PIXELS   = 500
@@ -32,6 +33,22 @@ MIN_SAMPLES   = 200
 
 
 def Exploration(Flora):
+##    data=[]
+##    L  = [2,1,2,1];
+##    for i in range(len(L)):
+##        for j in range(2):
+##            Flora.drive(L[i]/2)
+##            time.sleep(1)
+##            tmp=Flora.scan()
+##            data.append(tmp)
+##            tmp.to_csv('scans/LD'+str(i)+str(j)+'.csv')
+##        Flora.rotate(pi/2)
+##        time.sleep(1)
+##        tmp=Flora.scan()
+##        data.append(tmp)
+##        tmp.to_csv('scans/LD_T_'+str(i)+str(j)+'.csv')
+            
+            
     data=[]
     L  = [2,1,2,1];
     for i in range(len(L)):
@@ -40,15 +57,12 @@ def Exploration(Flora):
             time.sleep(1)
             tmp=Flora.scan()
             data.append(tmp)
-            tmp.to_csv('scans/LD'+str(i)+str(j)+'.csv')
         Flora.rotate(pi/2)
-        time.sleep(1)
-        tmp=Flora.scan()
-        data.append(tmp)
-        tmp.to_csv('scans/LD_T_'+str(i)+str(j)+'.csv')
+    
     return data
 
 def PlantFindIR(Flora):
+    Flag = AlignIR(Flora)
     while(1):
         time.sleep(0.2)
         Flag = AlignIR(Flora)
@@ -56,11 +70,11 @@ def PlantFindIR(Flora):
             F = 0
             break
         scan = Flora.scan()
-        scanOff =ScanOffset(Flora,scan)
-        ScanFilt = FilterPoints(scanOff,-0.0872,0.0872)
+        #scanOff =ScanOffset(Flora,scan)
+        ScanFilt = FilterPoints(scan,-0.0872*2,0.0872*2)
         DistFromPlant=min(ScanFilt.d)
         print(DistFromPlant)
-        if DistFromPlant <= 0.5:
+        if DistFromPlant <= 0.3+0.35/2:
             #theta = FindPlantCenter(Flora.scan())
             # Extrapolate From point cloud if Flora is within Allowed distance
             #if theta > x:
@@ -70,7 +84,7 @@ def PlantFindIR(Flora):
             F = 1
             break
         D = DistFromPlant/2
-        Flora.drive(D)
+        Flora.drive(min(D,1))
     #NtxPlant    
     return F
 
