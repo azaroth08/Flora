@@ -79,7 +79,7 @@ void setup() {
 
   //RF Setup
   //while (!Serial);
-  Serial.begin(115200);
+  Serial.begin(9600);
   radio.begin(); 
   radio.openWritingPipe(TxPlant1);
   radio.openReadingPipe(0, RxPlant1);
