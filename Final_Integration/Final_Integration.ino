@@ -133,12 +133,8 @@ void rotation(int water = 50) {
 
 // Watering Module 
 void Watering(int water) {
-  
-    int angles[2] = {55, 76};
     
-//    P_Servo.write(20);  // tell servo to go to a particular angle
-//    M_Servo.write(153);
-//    E_Servo.write(15);
+    int angles[2] = {70, 90};
     
     shoulderAngle(P_Servo, M_Servo, 0, angles[0], stepSize);
   
@@ -148,9 +144,9 @@ void Watering(int water) {
 
     // WATER DISPENSING
     
-      digitalWrite(stopPin,LOW); // enable stepper
-      rotation(water); // call watering  
-      digitalWrite(stopPin,HIGH); // disable stepper 
+    digitalWrite(stopPin,LOW); // enable stepper
+    rotation(water); // call watering  
+    digitalWrite(stopPin,HIGH); // disable stepper 
     
     elbowAngle(E_Servo, angles[1], 15, stepSize); // retract Elbow 
     
