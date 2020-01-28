@@ -189,7 +189,7 @@ void setup() {
   elbowAngle(E_Servo, 15, 17, stepSize);
 
 //   DELETE AFTER CHECK
-  delay(1000)                                         // DELETE
+  delay(1000);                                        // DELETE
   shoulderAngle(P_Servo, M_Servo, 2, 70, stepSize);   // DELETE
   elbowAngle(E_Servo, 17, 150, stepSize);             // DELETE
   
