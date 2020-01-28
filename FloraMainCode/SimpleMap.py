@@ -195,7 +195,7 @@ def main():
     """
     
     #print(__file__, "start")
-    xyreso = 0.2  # x-y grid resolution
+    xyreso = 0.1  # x-y grid resolution
     #ang, dist = file_read("LD1.csv")
     class Flora:
         pass
